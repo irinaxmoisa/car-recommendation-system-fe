@@ -1,0 +1,84 @@
+<mat-tab-group style="margin-top: 10px;">
+  <mat-tab label="Browse cars">
+    <div style="padding: 16px;">
+      <h2>Get car recommendations based on the cars you like</h2>
+
+      <table mat-table [dataSource]="dataSourceBrowseCars" class="mat-elevation-z8">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let car">{{ car.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let car">
+            <a routerLink="/detail/{{ car.id }}">{{ car.name }}</a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let car">
+            <button mat-icon-button>
+              <mat-icon>thumb_up_alt</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div>
+        <mat-paginator
+          #browsePaginator
+          [pageSizeOptions]="[5, 10, 15, 20, 25]"
+          showFirstLastButtons
+          aria-label="Select page of filteredLogs"
+          class="whitespace-nowrap my-2"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Suggested cars">
+    <div style="padding: 16px;">
+      <h2>Recommendations based on the cars you liked</h2>
+      <table mat-table [dataSource]="dataSourceSuggestedCars" class="mat-elevation-z8">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let car">{{ car.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let car">
+            <a routerLink="/detail/{{ car.id }}">{{ car.name }}</a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let car">
+            <button mat-icon-button>
+              <mat-icon>thumb_up_alt</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div>
+        <mat-paginator
+          #suggestedPaginator
+          [pageSizeOptions]="[5, 10, 15, 20, 25]"
+          showFirstLastButtons
+          aria-label="Select page of filteredLogs"
+          class="whitespace-nowrap my-2"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
