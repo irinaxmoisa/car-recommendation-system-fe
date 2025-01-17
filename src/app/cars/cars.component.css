@@ -6,6 +6,19 @@
   width: 15em;
 }
 
+.liked {
+  color: #7f3fc2;
+}
+
+button.mat-icon-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+button.mat-icon-button:hover {
+  background-color: transparent;
+}
+
 input {
   display: block;
   width: 100%;

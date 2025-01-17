@@ -13,11 +13,11 @@ export class DashboardComponent implements OnInit {
   constructor(private carService: CarService) { }
 
   ngOnInit(): void {
-    this.getCars();
+    //this.getCars();
   }
 
   getCars(): void {
-    this.carService.getCars()
+    this.carService.getAllCars()
       .subscribe(cars => this.cars = cars.slice(1, 5));
   }
 }

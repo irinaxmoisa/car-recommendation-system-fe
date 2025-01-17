@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -11,7 +11,9 @@ import { MessageService } from './message.service';
 @Injectable({ providedIn: 'root' })
 export class CarService {
 
-  private heroesUrl = 'api/heroes';  // URL to web api
+  //private heroesUrl = 'api/heroes';  // URL to web api
+  private apiUrlBackend = 'http://127.0.0.1:5001/api/cars';
+  private apiUrlServer = 'http://127.0.0.1:5000/recommend';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -22,15 +24,41 @@ export class CarService {
     private messageService: MessageService) { }
 
 
-  getCars(): Observable<Car[]> {
-    return this.http.get<Car[]>(this.heroesUrl)
-      .pipe(
-        tap(_ => this.log('fetched cars')),
-        catchError(this.handleError<Car[]>('getCars', []))
-      );
+  getAllCars(): Observable<any> {
+    return this.http.get<any>(this.apiUrlBackend);
+    // return this.http.get<Car[]>(this.heroesUrl)
+    //   .pipe(
+    //     tap(_ => this.log('fetched cars')),
+    //     catchError(this.handleError<Car[]>('getCars', []))
+    //   );
+  }
+  getCarsPaginated(page: number, limit: number): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<any>(`${this.apiUrlBackend}/paginated`, { params });
+  }
+
+  getCarsByIdsPaginated(page: number, limit: number, ids: string[]): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    const body = { ids };
+    return this.http.post<any>(`${this.apiUrlBackend}/bulk/paginated`, body,{ params });
   }
 
 
+  getCarsByIds(ids: string[]): Observable<any> {
+    const url = `${this.apiUrlBackend}/bulk`;
+    const body = { ids };
+    return this.http.post(url, body);
+  }
+
+  getRecommendations(carIds: string[]): Observable<string[]> {
+    const url = `${this.apiUrlServer}`;
+    return this.http.post<string[]>(url, { car_ids: carIds });
+  }
 
   // /** GET heroes from the server */
   // getHeroes(): Observable<Car[]> {

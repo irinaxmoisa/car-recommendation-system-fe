@@ -3,23 +3,67 @@
     <div style="padding: 16px;">
       <h2>Get car recommendations based on the cars you like</h2>
 
+      <div style="margin-bottom: 10px;">
+        <strong>Selected car IDs: </strong>
+        <span *ngIf="likedCarIds.size > 0">{{ likedCarIdsAsArray.join(', ') }}</span>
+        <span *ngIf="likedCarIds.size === 0">No cars selected</span>
+      </div>
+
+      <button *ngIf="likedCarIds.size > 0" mat-flat-button [color]="'primary'" (click)="resetPaginationAndGetRecommendations()">
+        Get Recommendations
+      </button>
+
       <table mat-table [dataSource]="dataSourceBrowseCars" class="mat-elevation-z8">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let car">{{ car.id }}</td>
+
+        <!-- Make -->
+        <ng-container matColumnDef="Make">
+          <th mat-header-cell *matHeaderCellDef>Make</th>
+          <td mat-cell *matCellDef="let car">{{ car.Make }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let car">
-            <a routerLink="/detail/{{ car.id }}">{{ car.name }}</a>
-          </td>
+        <!-- Model -->
+        <ng-container matColumnDef="Model">
+          <th mat-header-cell *matHeaderCellDef>Model</th>
+          <td mat-cell *matCellDef="let car">{{ car.Model }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <!-- HU -->
+        <ng-container matColumnDef="HU">
+          <th mat-header-cell *matHeaderCellDef>HU</th>
+          <td mat-cell *matCellDef="let car">{{ car.HU }}</td>
+        </ng-container>
+
+        <!-- Fuel -->
+        <ng-container matColumnDef="Fuel">
+          <th mat-header-cell *matHeaderCellDef>Fuel</th>
+          <td mat-cell *matCellDef="let car">{{ car.Fuel }}</td>
+        </ng-container>
+
+        <!-- Transmission -->
+        <ng-container matColumnDef="Transmission">
+          <th mat-header-cell *matHeaderCellDef>Transmission</th>
+          <td mat-cell *matCellDef="let car">{{ car.Transmission }}</td>
+        </ng-container>
+
+        <!-- Power -->
+        <ng-container matColumnDef="Power">
+          <th mat-header-cell *matHeaderCellDef>Power</th>
+          <td mat-cell *matCellDef="let car">{{ car.Power }}</td>
+        </ng-container>
+
+        <!-- Price -->
+        <ng-container matColumnDef="Price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let car">{{ car.Price }}</td>
+        </ng-container>
+
+        <!-- Like-->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Like</th>
           <td mat-cell *matCellDef="let car">
-            <button mat-icon-button>
+            <button mat-icon-button
+                    [ngClass]="{'liked': isLiked(car.ID)}"
+                    (click)="toggleLike(car.ID)">
               <mat-icon>thumb_up_alt</mat-icon>
             </button>
           </td>
@@ -28,6 +72,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+
       <div>
         <mat-paginator
           #browsePaginator
@@ -35,39 +80,65 @@
           showFirstLastButtons
           aria-label="Select page of filteredLogs"
           class="whitespace-nowrap my-2"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [length]="totalItems"
+          (page)="onPageChange($event)"
         >
         </mat-paginator>
       </div>
     </div>
   </mat-tab>
 
+
   <mat-tab label="Suggested cars">
     <div style="padding: 16px;">
       <h2>Recommendations based on the cars you liked</h2>
       <table mat-table [dataSource]="dataSourceSuggestedCars" class="mat-elevation-z8">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let car">{{ car.id }}</td>
+        <!-- Make -->
+        <ng-container matColumnDef="Make">
+          <th mat-header-cell *matHeaderCellDef>Make</th>
+          <td mat-cell *matCellDef="let car">{{ car.Make }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let car">
-            <a routerLink="/detail/{{ car.id }}">{{ car.name }}</a>
-          </td>
+        <!-- Model -->
+        <ng-container matColumnDef="Model">
+          <th mat-header-cell *matHeaderCellDef>Model</th>
+          <td mat-cell *matCellDef="let car">{{ car.Model }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let car">
-            <button mat-icon-button>
-              <mat-icon>thumb_up_alt</mat-icon>
-            </button>
-          </td>
+        <!-- HU -->
+        <ng-container matColumnDef="HU">
+          <th mat-header-cell *matHeaderCellDef>HU</th>
+          <td mat-cell *matCellDef="let car">{{ car.HU }}</td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <!-- Fuel -->
+        <ng-container matColumnDef="Fuel">
+          <th mat-header-cell *matHeaderCellDef>Fuel</th>
+          <td mat-cell *matCellDef="let car">{{ car.Fuel }}</td>
+        </ng-container>
+
+        <!-- Transmission -->
+        <ng-container matColumnDef="Transmission">
+          <th mat-header-cell *matHeaderCellDef>Transmission</th>
+          <td mat-cell *matCellDef="let car">{{ car.Transmission }}</td>
+        </ng-container>
+
+        <!-- Power -->
+        <ng-container matColumnDef="Power">
+          <th mat-header-cell *matHeaderCellDef>Power</th>
+          <td mat-cell *matCellDef="let car">{{ car.Power }}</td>
+        </ng-container>
+
+        <!-- Price -->
+        <ng-container matColumnDef="Price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let car">{{ car.Price }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsRecommended"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsRecommended;"></tr>
       </table>
       <div>
         <mat-paginator
@@ -76,6 +147,10 @@
           showFirstLastButtons
           aria-label="Select page of filteredLogs"
           class="whitespace-nowrap my-2"
+          [pageSize]="suggestedPageSize"
+          [pageIndex]="suggestedPageIndex"
+          [length]="totalSuggestedItems "
+          (page)="onSuggestedPageChange($event)"
         >
         </mat-paginator>
       </div>
